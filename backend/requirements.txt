@@ -1,0 +1,6 @@
+fastapi
+python-multipart
+uvicorn
+web3
+python-dotenv
+opencv-python
