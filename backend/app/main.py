@@ -18,7 +18,7 @@ app.add_middleware(
 
 # 注册路由
 app.include_router(images.router, prefix="/api/v1")
-# app.include_router(detect.router, prefix="/api/v1")  # 需要时取消注释
+# app.include_router(detect.router, prefix="/api/v1")  
 
 if __name__ == "__main__":
     import uvicorn

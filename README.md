@@ -4,7 +4,7 @@
 
 # PixelProof
 
-**Empower your images with invisible watermarking and on-chain registration.**
+**Empower your images with invisible watermarking and Web3 on-chain registration.**
 
 **PixelProof** is a lightweight demo project that embeds an invisible watermark into uploaded images, then registers a hash of the watermarked file on the Polygon testnet. 
 
@@ -19,7 +19,7 @@ By combining digital watermarking with blockchain timestamps, you get both proof
 
 ## Tech Stack
 
-- **Language & Framework**: Python 3 + FastAPI  
+- **Language & Framework**: Python 3 + FastAPI + Node.js  
 - **Image Processing**: OpenCV, Pillow, NumPy  
 - **Blockchain**: web3.py for Polygon testnet  
 - **Infrastructure**: Optional Docker container for quick deployment  
@@ -27,7 +27,10 @@ By combining digital watermarking with blockchain timestamps, you get both proof
 
 1. **Install Dependencies**
 	```bash
+	// under backend/
 	pip install -r requirements.txt
+	// under frontend/
+	npm install
 	```
 
 2. **Run the Server**

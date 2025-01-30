@@ -20,7 +20,7 @@ def register_image(img_hash: str) -> str:
     # 构建交易
     nonce = w3.eth.get_transaction_count(w3.eth.account.from_key(private_key).address)
     tx = contract.functions.registerImage(img_hash).build_transaction({
-        'chainId': 80001,  # Polygon Mumbai链ID
+        'chainId': 80001,  # Polygon 链ID
         'gas': 200000,
         'gasPrice': w3.to_wei('30', 'gwei'),
         'nonce': nonce,
