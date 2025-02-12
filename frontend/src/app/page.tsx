@@ -2,7 +2,6 @@
 "use client";
 
 import { useState } from "react";
-import Typical from 'react-typical'
 
 export default function HomePage() {
   // Modal states (same as before)
@@ -19,15 +18,15 @@ export default function HomePage() {
   // You can adjust 80%/20% to suit your preference
   const topHeight =
     hoveredSection === "top"
-      ? "70%"
+      ? "60%"
       : hoveredSection === "bottom"
-      ? "30%"
+      ? "40%"
       : "50%";
   const bottomHeight =
     hoveredSection === "bottom"
-      ? "70%"
+      ? "60%"
       : hoveredSection === "top"
-      ? "30%"
+      ? "40%"
       : "50%";
 
   // Handle file input

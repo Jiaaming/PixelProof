@@ -2,7 +2,7 @@
 <img src="https://raw.githubusercontent.com/Jiaaming/blogImage/main/pic/20250127225511.png" alt="Logo" width="200">
 </p>
 
-# PixelProof
+# PixelProof (Not finish yet)
 
 **Empower your images with invisible watermarking and Web3 on-chain registration.**
 

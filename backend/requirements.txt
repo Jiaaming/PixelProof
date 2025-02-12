@@ -4,3 +4,4 @@ uvicorn
 web3
 python-dotenv
 opencv-python
+pytest
