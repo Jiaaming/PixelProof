@@ -25,6 +25,7 @@ ETH Sepolia Contract address: `0xE9198de7AD40cC1D7940E9eD6A606FB225fD8996`
 - **Image Processing**: OpenCV, Pillow, NumPy  
 - **Blockchain**: web3.py for Polygon testnet  
 - **Infrastructure**: Optional Docker container for quick deployment  
+
 ## Quick Start
 
 1. **Install Dependencies**
@@ -51,6 +52,10 @@ ETH Sepolia Contract address: `0xE9198de7AD40cC1D7940E9eD6A606FB225fD8996`
 	- Open your browser at http://localhost:8000
 	- Upload an image and let PixelProof embed the watermark
 	- View your transaction info (TxHash, block number) on the PolygonScan testnet
+
+
+## Deployment:	 
+Use VScode to open the project, open run and debug, select **Debug Full Stack(FastAPI + Next.js)**. It will start the backend and frontend server at the same time, with debugging enabled.
 
 
 ## For smart contract deployment (use sepolia as an example):   
