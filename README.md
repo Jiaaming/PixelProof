@@ -10,6 +10,8 @@
 
 By combining digital watermarking with blockchain timestamps, you get both proof-of-ownership and a robust way to track potential misuse.
 
+ETH Sepolia Contract address: `0xE9198de7AD40cC1D7940E9eD6A606FB225fD8996`   
+
 ## Features
 
 - **Invisible Watermark**: Uses basic DCT/DWT-based algorithms to embed a hidden signature inside images.  
@@ -49,6 +51,18 @@ By combining digital watermarking with blockchain timestamps, you get both proof
 	- Open your browser at http://localhost:8000
 	- Upload an image and let PixelProof embed the watermark
 	- View your transaction info (TxHash, block number) on the PolygonScan testnet
+
+
+## For smart contract deployment (use sepolia as an example):   
+```bash
+cd sepolia/
+
+```
+create a .env file in the root directory and add the following:
+```bash
+PRIVATE_KEY=your_private_key
+API_URL=your_infura_url
+```
 
 ## Disclaimer
 

@@ -47,7 +47,7 @@ async def upload_image(file: UploadFile = File(...)):
         # Generate the QR code (assuming generate_qr_code returns a PIL Image)
         qr_img = generate_qr_code(url)
         qr_np = np.array(qr_img.convert('L'))
-        wm_bit = qr_np.flatten() > 128 
+        wm_bit = qr_np.flatten() > 128  #[1,0,0,0,1,1...] 1 x (128*128)
 
         # Convert bytes to NumPy array
         image_np = np.asarray(bytearray(image_data), dtype=np.uint8)
@@ -83,10 +83,9 @@ async def upload_image(file: UploadFile = File(...)):
         # Extract the watermark from the embedded image in memory
         # wm_extract = bwm1.extract(filename=debug_embed_path, wm_shape=(128, 128), out_wm_name="extracted.png")
         wm_extract = bwm1.extract(embed_img=embed_image, wm_shape=(128, 128), mode='bit')
-        wm_extract_2d = wm_extract.reshape((128, 128))
         # (128, 128)
         if wm_extract.ndim == 1:
-                wm_extract = wm_extract.reshape((128, 128))
+            wm_extract = wm_extract.reshape((128, 128))
         # Convert extracted watermark to 8-bit for saving
         wm_img = (wm_extract > 0.5).astype(np.uint8) * 255
         debug_wm_path = "debug_wm_extract.jpg"

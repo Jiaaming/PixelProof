@@ -5,3 +5,6 @@ web3
 python-dotenv
 opencv-python
 pytest
+blind-watermark
+qrcode
+hardhat

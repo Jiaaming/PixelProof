@@ -8,7 +8,7 @@ load_dotenv()
 # 初始化Web3（Sepolia）
 w3 = Web3(Web3.HTTPProvider(os.getenv("SEPOLIA_RPC"))) 
 private_key = os.getenv("PRIVATE_KEY")
-contract_address = os.getenv("CONTRACT_ADDRESS")
+contract_address = os.getenv("ETH_CONTRACT_ADDRESS")
 
 with open("contracts/abi.json") as f:
     contract_abi = json.load(f)

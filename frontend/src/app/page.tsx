@@ -1,27 +1,30 @@
-
 "use client";
 
 import { useState } from "react";
 
 export default function HomePage() {
-  // Modal states (same as before)
+  // Modal states
   const [showModal, setShowModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("");
   const [txHash, setTxHash] = useState<string>('');
   const [error, setError] = useState<string>('');
 
+  // Additional states to display watermarked images
+  const [embeddedImg, setEmbeddedImg] = useState<string>("");
+  const [extractedImg, setExtractedImg] = useState<string>("");
+
   // Layout hover state: "none" | "top" | "bottom"
   const [hoveredSection, setHoveredSection] = useState<"none" | "top" | "bottom">("none");
 
   // Decide how much height each section should have
-  // You can adjust 80%/20% to suit your preference
   const topHeight =
     hoveredSection === "top"
       ? "60%"
       : hoveredSection === "bottom"
       ? "40%"
       : "50%";
+
   const bottomHeight =
     hoveredSection === "bottom"
       ? "60%"
@@ -35,6 +38,10 @@ export default function HomePage() {
     if (!file) return;
     setSelectedFile(file);
     setPreview(URL.createObjectURL(file));
+
+    // Clear out previous watermarked images
+    setEmbeddedImg("");
+    setExtractedImg("");
   };
 
   // Upload handler
@@ -51,15 +58,35 @@ export default function HomePage() {
       if (!response.ok) {
         throw new Error("Upload failed. Please check server logs or try again.");
       }
+
       const data = await response.json();
-      setTxHash(data.tx_hash);
+      /**
+       * Example data structure returned:
+       * {
+       *   "embedded": {
+       *     "data": "<base64-string>",
+       *     "type": "image/jpeg"
+       *   },
+       *   "extracted": {
+       *     "data": "<base64-string>",
+       *     "type": "image/png"
+       *   }
+       * }
+       */
+
+      // Construct Base64 URLs and set them in state
+      const embeddedBase64 = `data:${data.embedded.type};base64,${data.embedded.data}`;
+      const extractedBase64 = `data:${data.extracted.type};base64,${data.extracted.data}`;
+
+      setEmbeddedImg(embeddedBase64);
+      setExtractedImg(extractedBase64);
+
       setError("");
+      alert(`File uploaded successfully: ${selectedFile.name}`);
+      // setShowModal(false); // optionally close the modal
     } catch (err) {
       setError(err instanceof Error ? err.message : "An unexpected error occurred.");
     }
-
-    alert(`File ready for upload: ${selectedFile.name}`);
-    // setShowModal(false);
   };
 
   return (
@@ -94,12 +121,10 @@ export default function HomePage() {
       >
         <div className="w-full h-full flex flex-col items-center justify-center py-12 px-4">
           {/* Content in the bottom half */}
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">
-            PixelProof
-          </h1>
+          <h1 className="text-4xl font-bold text-gray-800 mb-4">PixelProof</h1>
           <p className="text-lg text-gray-600 mb-8">
             Empower your images with invisible watermarking and on-chain registration
-          </p> 
+          </p>
           <button
             onClick={() => setShowModal(true)}
             className="inline-block px-6 py-3 text-lg font-semibold text-white bg-indigo-600 rounded-lg shadow hover:bg-indigo-700"
@@ -120,7 +145,7 @@ export default function HomePage() {
           {/* Background overlay—close modal if user clicks outside */}
           <div
             className="fixed inset-0 bg-black/50 backdrop-blur-sm"
-           // onClick={() => setShowModal(false)}
+            // onClick={() => setShowModal(false)}
           ></div>
 
           {/* Modal box */}
@@ -147,7 +172,7 @@ export default function HomePage() {
               "
             />
 
-            {/* Preview */}
+            {/* Preview: original image */}
             {preview && (
               <img
                 src={preview}
@@ -176,6 +201,30 @@ export default function HomePage() {
                   {txHash}
                 </a>
               </p>
+            )}
+
+            {/* Embedded image */}
+            {embeddedImg && (
+              <div className="mb-4">
+                <p className="font-semibold text-gray-800">Embedded Image:</p>
+                <img
+                  src={embeddedImg}
+                  alt="Embedded Watermark"
+                  className="w-full h-auto mt-2 rounded shadow"
+                />
+              </div>
+            )}
+
+            {/* Extracted watermark */}
+            {extractedImg && (
+              <div className="mb-4">
+                <p className="font-semibold text-gray-800">Extracted Watermark:</p>
+                <img
+                  src={extractedImg}
+                  alt="Extracted Watermark"
+                  className="w-full h-auto mt-2 rounded shadow"
+                />
+              </div>
             )}
 
             {/* Actions */}
