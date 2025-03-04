@@ -223,7 +223,7 @@ export default function HomePage() {
               <p className="mb-4 text-sm text-gray-800">
                 Transaction Hash:
                 <a
-                  href={`https://mumbai.polygonscan.com/tx/${txHash}`}
+                  href={`https://sepolia.etherscan.io/tx/${txHash}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-indigo-600 hover:text-indigo-700 ml-1"

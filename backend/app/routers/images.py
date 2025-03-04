@@ -8,7 +8,7 @@ from PIL import Image
 import os
 router = APIRouter()
 import multiprocessing
-
+from services.blockchain import BlockchainService
 # 1 **Monkey Patch `multiprocessing.set_start_method()`**
 def no_op(*args, **kwargs):
     pass
@@ -48,6 +48,8 @@ async def upload_image(
         raise HTTPException(status_code=400, detail="Only images are allowed")
     
     try:
+        print("chain: ", chain)
+        print("key: ", key)
         # Read the uploaded image as bytes
         image_data = await file.read()
         file_size = len(image_data)  # Calculate file size in bytes
@@ -57,6 +59,9 @@ async def upload_image(
             raise HTTPException(status_code=400, detail="Image size too small (must be at least 1MB)")
 
         print(f"File size: {file_size / 1024:.2f} KB")  # Print file size in KB
+
+        blockchain_service = BlockchainService()
+        tx_hash = blockchain_service.register_image(image_data)
 
         # Define the URL for the QR code
         url = "https://www.jiaaming.cn/"  # Replace with your desired URL
@@ -89,22 +94,12 @@ async def upload_image(
 
         embed_image = bwm1.embed()
     
-        # Optional: Debug save of the embedded image
-        # debug_embed_path = "debug_embed_image.jpg"
-        # cv2.imwrite(debug_embed_path, embed_image)
-        # print(f"[DEBUG] Embedded image saved to: {os.path.abspath(debug_embed_path)}")
-        # print(f"[DEBUG] embed_image shape: {embed_image.shape}, dtype: {embed_image.dtype}")
-
         # Extract the watermark from the embedded image in memory
         wm_extract = bwm1.extract(embed_img=embed_image, wm_shape=(128, 128), mode='bit')
         if wm_extract.ndim == 1:
             wm_extract = wm_extract.reshape((128, 128))
         # Convert extracted watermark to 8-bit for saving
         wm_img = (wm_extract > 0.5).astype(np.uint8) * 255
-        # debug_wm_path = "debug_wm_extract.jpg"
-        # cv2.imwrite(debug_wm_path, wm_img)
-        # print(f"[DEBUG] Extracted watermark image saved to: {os.path.abspath(debug_wm_path)}")
-        # print(f"[DEBUG] wm_img shape: {wm_img.shape}, dtype: {wm_img.dtype}")
 
         # Encode the embedded image to JPEG bytes
         success_embed, embed_buf = cv2.imencode('.jpg', embed_image)
@@ -123,7 +118,6 @@ async def upload_image(
         wm_b64 = base64.b64encode(wm_bytes).decode('utf-8')
 
         # Register on the blockchain using chain and key
-        tx_hash = register_on_chain(chain, key, image_data)
 
         # Return both images and transaction hash as base64-encoded strings in a JSON response
         ret = {
@@ -139,6 +133,7 @@ async def upload_image(
         }
         return ret
     except Exception as e:
+        print(f"Error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
     
 @router.post("/extract")
