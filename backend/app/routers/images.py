@@ -8,7 +8,7 @@ from PIL import Image
 import os
 router = APIRouter()
 import multiprocessing
-from services.blockchain import BlockchainService
+from services.EthService import EthService
 # 1 **Monkey Patch `multiprocessing.set_start_method()`**
 def no_op(*args, **kwargs):
     pass
@@ -22,20 +22,19 @@ del multiprocessing.set_start_method
 from blind_watermark import WaterMark
 import numpy as np
 
-# Placeholder function for blockchain registration
 def register_on_chain(chain: str, key: str, image_data: bytes) -> str:
     """
     Simulate registering the image on a blockchain using the provided chain and wallet key.
     Replace this with actual blockchain interaction logic.
     """
-    # Example logic (to be replaced):
-    # if chain == "ETH":
-    #     tx_hash = eth_register_function(key, image_data)
-    # elif chain == "SUI":
-    #     tx_hash = sui_register_function(key, image_data)
-    # else:
-    #     raise ValueError("Unsupported chain")
-    return "0x_placeholder_tx_hash"  # Placeholder transaction hash
+    if chain in ["ETH"]:
+        blockchain_service = EthService()
+        tx_hash = blockchain_service.register_image(image_data)
+    elif chain in ["SUI"]:
+        pass
+    else:
+        pass
+    return tx_hash  # Placeholder transaction hash
 
 @router.post("/upload")
 async def upload_image(
@@ -60,11 +59,9 @@ async def upload_image(
 
         print(f"File size: {file_size / 1024:.2f} KB")  # Print file size in KB
 
-        blockchain_service = BlockchainService()
-        tx_hash = blockchain_service.register_image(image_data)
-
+        tx_hash = register_on_chain(chain, key, image_data)
         # Define the URL for the QR code
-        url = "https://www.jiaaming.cn/"  # Replace with your desired URL
+        url = f"https://sepolia.etherscan.io/tx/${tx_hash}" # Replace with your desired URL
 
         # Generate the QR code (assuming generate_qr_code returns a PIL Image)
         qr_img = generate_qr_code(url)

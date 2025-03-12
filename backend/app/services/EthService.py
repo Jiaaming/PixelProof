@@ -6,7 +6,7 @@ from web3 import Web3
 from typing import Optional
 import hashlib
 
-class BlockchainService:
+class EthService:
     def __init__(self, network_rpc: Optional[str] = None, private_key: Optional[str] = None, 
                  contract_address: Optional[str] = None, abi_path: str = "contracts/abi.json"):
         # Load environment variables
