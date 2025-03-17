@@ -9,6 +9,8 @@ import os
 router = APIRouter()
 import multiprocessing
 from services.EthService import EthService
+from services.SolService import SolService
+
 # 1 **Monkey Patch `multiprocessing.set_start_method()`**
 def no_op(*args, **kwargs):
     pass
@@ -30,8 +32,9 @@ def register_on_chain(chain: str, key: str, image_data: bytes) -> str:
     if chain in ["ETH"]:
         blockchain_service = EthService()
         tx_hash = blockchain_service.register_image(image_data)
-    elif chain in ["SUI"]:
-        pass
+    elif chain in ["SOL"]:
+        blockchain_service = SolService()
+        tx_hash = blockchain_service.register_image(image_data)
     else:
         pass
     return tx_hash  # Placeholder transaction hash
@@ -61,8 +64,10 @@ async def upload_image(
 
         tx_hash = register_on_chain(chain, key, image_data)
         # Define the URL for the QR code
-        url = f"https://sepolia.etherscan.io/tx/${tx_hash}" # Replace with your desired URL
-
+        if chain == "ETH":
+            url = f"https://sepolia.etherscan.io/tx/${tx_hash}" # Replace with your desired URL
+        elif chain == "SOL":
+            url = f"https://explorer.solana.com/tx/${tx_hash}?cluster=devnet"
         # Generate the QR code (assuming generate_qr_code returns a PIL Image)
         qr_img = generate_qr_code(url)
         qr_np = np.array(qr_img.convert('L'))
