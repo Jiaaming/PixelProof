@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import SettingsModal from "@/components/SettingsModal";
+import UploadModal from "@/components/UploadModal";
 
 export default function HomePage() {
   // Modal states
@@ -25,9 +27,9 @@ export default function HomePage() {
 
   // Dynamic section heights
   const topHeight =
-    hoveredSection === "top" ? "60%" : hoveredSection === "bottom" ? "40%" : "50%";
+    hoveredSection === "top" ? "55%" : hoveredSection === "bottom" ? "45%" : "50%";
   const bottomHeight =
-    hoveredSection === "bottom" ? "60%" : hoveredSection === "top" ? "40%" : "50%";
+    hoveredSection === "bottom" ? "55%" : hoveredSection === "top" ? "45%" : "50%";
 
   // Load saved settings from localStorage on component mount
   useEffect(() => {
@@ -134,145 +136,34 @@ export default function HomePage() {
 
       {/* SETTINGS MODAL */}
       {showSettingsModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => setShowSettingsModal(false)}
-          ></div>
-          <div className="relative z-10 w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">Settings</h2>
-
-            <label className="block mb-2 text-sm font-medium text-gray-700">
-              Select Blockchain Chain
-            </label>
-            <select
-              value={selectedChain}
-              onChange={(e) => setSelectedChain(e.target.value)}
-              className="w-full p-2 border rounded mb-4"
-            >
-              <option value="">Select Chain</option>
-              <option value="ETH">Ethereum (ETH)</option>
-              <option value="SUI">Sui (SUI)</option>
-              <option value="SOL">Solana (SOL)</option>
-            </select>
-
-            <label className="block mb-2 text-sm font-medium text-gray-700">
-              Wallet Key
-            </label>
-            <input
-              type="text"
-              value={walletKey}
-              onChange={(e) => setWalletKey(e.target.value)}
-              placeholder="e.g., ETH_PRIVATE_KEY, SUI_KEY"
-              className="w-full p-2 border rounded mb-4"
-            />
-
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={() => {
-                  localStorage.setItem("selectedChain", selectedChain);
-                  localStorage.setItem("walletKey", walletKey);
-                  setShowSettingsModal(false);
-                }}
-                className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
-              >
-                Save
-              </button>
-              <button
-                onClick={() => setShowSettingsModal(false)}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
+          <SettingsModal
+          selectedChain={selectedChain}
+          setSelectedChain={setSelectedChain}
+          walletKey={walletKey}
+          setWalletKey={setWalletKey}
+          onSave={() => {
+            localStorage.setItem("selectedChain", selectedChain);
+            localStorage.setItem("walletKey", walletKey);
+            setShowSettingsModal(false);
+          }}
+          onClose={() => setShowSettingsModal(false)}
+        />
       )}
 
       {/* UPLOAD MODAL */}
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => setShowModal(false)}
-          ></div>
-          <div className="relative z-10 w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">Select and Upload an Image</h2>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 mb-4"
-            />
-            {preview && (
-              <img
-                src={preview}
-                alt="Selected File"
-                className="w-full h-auto mb-4 rounded shadow"
-              />
-            )}
-            {error && (
-              <div className="mb-4 p-4 bg-red-100 text-red-600 rounded">{error}</div>
-            )}
-            {loading && (
-              <div className="flex justify-center mb-4">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-600"></div>
-              </div>
-            )}
-            {txHash && (
-              <p className="mb-4 text-sm text-gray-800">
-                Transaction Hash:
-                <a
-                  href={`https://sepolia.etherscan.io/tx/${txHash}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-indigo-600 hover:text-indigo-700 ml-1"
-                >
-                  {txHash}
-                </a>
-              </p>
-            )}
-            {embeddedImg && (
-              <div className="mb-4">
-                <p className="font-semibold text-gray-800">Embedded Image:</p>
-                <img
-                  src={embeddedImg}
-                  alt="Embedded Watermark"
-                  className="w-full h-auto mt-2 rounded shadow"
-                />
-              </div>
-            )}
-            {extractedImg && (
-              <div className="mb-4">
-                <p className="font-semibold text-gray-800">Extracted Watermark:</p>
-                <img
-                  src={extractedImg}
-                  alt="Extracted Watermark"
-                  className="w-full h-auto mt-2 rounded shadow"
-                />
-              </div>
-            )}
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleUpload}
-                disabled={loading}
-                className={`px-4 py-2 rounded text-white ${
-                  loading
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-indigo-600 hover:bg-indigo-700"
-                }`}
-              >
-                {loading ? "Uploading..." : "Upload"}
-              </button>
-            </div>
-          </div>
-        </div>
+          <UploadModal
+          preview={preview}
+          selectedFile={selectedFile}
+          embeddedImg={embeddedImg}
+          extractedImg={extractedImg}
+          txHash={txHash}
+          loading={loading}
+          error={error}
+          onFileChange={handleFileChange}
+          onUpload={handleUpload}
+          onClose={() => setShowModal(false)}
+        />
       )}
     </main>
   );
