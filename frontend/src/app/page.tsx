@@ -1,24 +1,24 @@
 "use client";
 
 import { useState, useEffect } from "react";
+//components
 import SettingsModal from "@/components/SettingsModal";
 import UploadModal from "@/components/UploadModal";
 import TopSection from "@/components/TopSection";
 import BottomSection from "@/components/BottomSection";
+//hooks
+import { useLocalSettings } from "@/hooks/useLocalSettings";
 
 export default function HomePage() {
   // Modal states
   const [showModal, setShowModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  //File states
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("");
   const [txHash, setTxHash] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false); // Loading state
-
-  // Settings states
-  const [selectedChain, setSelectedChain] = useState<string>("");
-  const [walletKey, setWalletKey] = useState<string>("");
 
   // Additional states for watermarked images
   const [embeddedImg, setEmbeddedImg] = useState<string>("");
@@ -26,7 +26,6 @@ export default function HomePage() {
 
   // Layout hover state
   const [hoveredSection, setHoveredSection] = useState<"none" | "top" | "bottom">("none");
-
   // Dynamic section heights
   const topHeight =
     hoveredSection === "top" ? "55%" : hoveredSection === "bottom" ? "45%" : "50%";
@@ -34,13 +33,14 @@ export default function HomePage() {
     hoveredSection === "bottom" ? "55%" : hoveredSection === "top" ? "45%" : "50%";
 
   // Load saved settings from localStorage on component mount
-  useEffect(() => {
-    const savedChain = localStorage.getItem("selectedChain");
-    const savedKey = localStorage.getItem("walletKey");
-    if (savedChain) setSelectedChain(savedChain);
-    if (savedKey) setWalletKey(savedKey);
-  }, []);
-
+  const {
+    selectedChain,
+    setSelectedChain,
+    walletKey,
+    setWalletKey,
+    saveSettings,
+  } = useLocalSettings();
+  
   // Handle file input
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -118,8 +118,7 @@ export default function HomePage() {
           walletKey={walletKey}
           setWalletKey={setWalletKey}
           onSave={() => {
-            localStorage.setItem("selectedChain", selectedChain);
-            localStorage.setItem("walletKey", walletKey);
+            saveSettings();
             setShowSettingsModal(false);
           }}
           onClose={() => setShowSettingsModal(false)}
