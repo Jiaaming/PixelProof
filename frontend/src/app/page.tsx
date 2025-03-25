@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import SettingsModal from "@/components/SettingsModal";
 import UploadModal from "@/components/UploadModal";
+import TopSection from "@/components/TopSection";
+import BottomSection from "@/components/BottomSection";
 
 export default function HomePage() {
   // Modal states
@@ -96,43 +98,17 @@ export default function HomePage() {
   return (
     <main className="relative w-full h-screen overflow-hidden">
       {/* TOP SECTION */}
-      <section
-        style={{ height: topHeight, backgroundImage: `url('/bg2.jpeg')` }}
-        className="transition-all duration-500 ease-in-out relative bg-cover bg-center"
-        onMouseEnter={() => setHoveredSection("top")}
-        onMouseLeave={() => setHoveredSection("none")}
-      >
-        <div className="absolute inset-0 bg-black/20" />
-      </section>
+      <TopSection height={topHeight} onHover={setHoveredSection} />
+
 
       {/* BOTTOM SECTION */}
-      <section
-        style={{ height: bottomHeight }}
-        className="transition-all duration-500 ease-in-out bg-white relative"
-        onMouseEnter={() => setHoveredSection("bottom")}
-        onMouseLeave={() => setHoveredSection("none")}
-      >
-        <div className="w-full h-full flex flex-col items-center justify-center py-12 px-4">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">PixelProof</h1>
-          <p className="text-lg text-gray-600 mb-8">
-            Empower your images with invisible watermarking and on-chain registration
-          </p>
-          <div className="flex space-x-4">
-            <button
-              onClick={() => setShowModal(true)}
-              className="inline-block px-6 py-3 text-lg font-semibold text-white bg-indigo-600 rounded-lg shadow hover:bg-indigo-700"
-            >
-              Upload an Image
-            </button>
-            <button
-              onClick={() => setShowSettingsModal(true)}
-              className="inline-block px-6 py-3 text-lg font-semibold text-white bg-gray-600 rounded-lg shadow hover:bg-gray-700"
-            >
-              Settings
-            </button>
-          </div>
-        </div>
-      </section>
+      <BottomSection
+        height={bottomHeight}
+        onHover={setHoveredSection}
+        onUploadClick={() => setShowModal(true)}
+        onSettingsClick={() => setShowSettingsModal(true)}
+      />
+
 
       {/* SETTINGS MODAL */}
       {showSettingsModal && (
