@@ -1,15 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation"; 
 //components
 import SettingsModal from "@/components/SettingsModal";
 import UploadModal from "@/components/UploadModal";
 import TopSection from "@/components/TopSection";
 import BottomSection from "@/components/BottomSection";
+import DisplaySection from "@/components/DisplaySection";
 //hooks
 import { useLocalSettings } from "@/hooks/useLocalSettings";
 
 export default function HomePage() {
+  const router = useRouter();
   // Modal states
   const [showModal, setShowModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
@@ -102,11 +105,18 @@ export default function HomePage() {
 
 
       {/* BOTTOM SECTION */}
-      <BottomSection
+      {/* <BottomSection
         height={bottomHeight}
         onHover={setHoveredSection}
         onUploadClick={() => setShowModal(true)}
         onSettingsClick={() => setShowSettingsModal(true)}
+      /> */}
+      <BottomSection
+        height={bottomHeight}
+        onHover={setHoveredSection}
+        onUploadClick={() => router.push("/workspace")}
+        onSettingsClick={() => {}}
+        onWorkspaceClick={() => router.push("/workspace")} 
       />
 
 

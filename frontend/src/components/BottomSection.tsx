@@ -6,6 +6,7 @@ interface BottomSectionProps {
   onHover: (section: "bottom" | "none") => void;
   onUploadClick: () => void;
   onSettingsClick: () => void;
+  onWorkspaceClick: () => void;
 }
 
 export default function BottomSection({
@@ -13,6 +14,7 @@ export default function BottomSection({
   onHover,
   onUploadClick,
   onSettingsClick,
+  onWorkspaceClick,
 }: BottomSectionProps) {
   return (
     <section
@@ -27,7 +29,7 @@ export default function BottomSection({
           Empower your images with invisible watermarking and on-chain registration
         </p>
         <div className="flex space-x-4">
-          <button
+          {/* <button
             onClick={onUploadClick}
             className="inline-block px-6 py-3 text-lg font-semibold text-white bg-indigo-600 rounded-lg shadow hover:bg-indigo-700"
           >
@@ -38,6 +40,12 @@ export default function BottomSection({
             className="inline-block px-6 py-3 text-lg font-semibold text-white bg-gray-600 rounded-lg shadow hover:bg-gray-700"
           >
             Settings
+          </button> */}
+          <button
+            onClick={onWorkspaceClick}
+            className="inline-block px-6 py-3 text-lg font-semibold text-white bg-teal-600 rounded-lg shadow hover:bg-teal-700"
+          >
+            Open Workspace
           </button>
         </div>
       </div>
