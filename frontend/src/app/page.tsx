@@ -118,38 +118,6 @@ export default function HomePage() {
         onSettingsClick={() => {}}
         onWorkspaceClick={() => router.push("/workspace")} 
       />
-
-
-      {/* SETTINGS MODAL */}
-      {showSettingsModal && (
-          <SettingsModal
-          selectedChain={selectedChain}
-          setSelectedChain={setSelectedChain}
-          walletKey={walletKey}
-          setWalletKey={setWalletKey}
-          onSave={() => {
-            saveSettings();
-            setShowSettingsModal(false);
-          }}
-          onClose={() => setShowSettingsModal(false)}
-        />
-      )}
-
-      {/* UPLOAD MODAL */}
-      {showModal && (
-          <UploadModal
-          preview={preview}
-          selectedFile={selectedFile}
-          embeddedImg={embeddedImg}
-          extractedImg={extractedImg}
-          txHash={txHash}
-          loading={loading}
-          error={error}
-          onFileChange={handleFileChange}
-          onUpload={handleUpload}
-          onClose={() => setShowModal(false)}
-        />
-      )}
     </main>
   );
 }

@@ -98,6 +98,7 @@ export default function WorkspacePage() {
       {/* 右侧：图像显示 */}
       <div className="w-1/2 bg-gray-50 p-6 overflow-auto">
         <DisplaySection
+          mode="embed"
           preview={preview}
           embeddedImg={embeddedImg}
           extractedImg={extractedImg}

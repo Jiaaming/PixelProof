@@ -1,64 +1,71 @@
-"use client";
-
-import React, { useState } from "react";
-
-interface DisplaySectionProps {
+type Props = {
+  mode: "embed" | "decode";
   preview: string;
-  embeddedImg: string;
-  extractedImg: string;
-  txHash: string;
-}
+  embeddedImg?: string;
+  extractedImg?: string;
+  txHash?: string;
+  link?: string;
+};
 
-export default function DisplaySection({
-  preview,
-  embeddedImg,
-  extractedImg,
-  txHash,
-}: DisplaySectionProps) {
-  const [zoomImage, setZoomImage] = useState<string | null>(null);
-
-  const renderImagePreview = (src: string, label: string) => (
-    <div className="mb-4">
-      <p className="font-semibold text-gray-800">{label}</p>
-      <img
-        src={src}
-        alt={label}
-        className="max-w-full max-h-64 mt-2 rounded shadow cursor-pointer"
-        onClick={() => setZoomImage(src)}
-      />
-    </div>
-  );
-
+export default function DisplaySection({ mode, preview, embeddedImg, extractedImg, txHash, link }: Props) {
   return (
     <div>
-      {txHash && (
-        <p className="mb-4 text-sm text-gray-800">
-          Transaction Hash:
-          <a
-            href={`https://sepolia.etherscan.io/tx/${txHash}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-indigo-600 hover:text-indigo-700 ml-1"
-          >
-            {txHash}
-          </a>
-        </p>
+      {preview && (
+        <div className="mb-4">
+          <p className="text-gray-700 font-medium">Image Preview:</p>
+          <img src={preview} alt="Preview" className="max-w-full max-h-[400px] rounded shadow" />
+        </div>
       )}
 
-      {preview && renderImagePreview(preview, "Original Image")}
-      {embeddedImg && renderImagePreview(embeddedImg, "Embedded Image")}
-      {extractedImg && renderImagePreview(extractedImg, "Extracted Watermark")}
+      {mode === "embed" && (
+        <>
+          {embeddedImg && (
+            <div className="mb-4">
+              <p className="font-semibold text-gray-800">Embedded Image:</p>
+              <img src={embeddedImg} alt="Embedded" className="max-w-full max-h-[400px] rounded shadow mt-2" />
+              <a
+                href={embeddedImg}
+                download="embedded.jpg"
+                className="mt-2 inline-block bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition"
+              >
+                ⬇️ Download Embedded Image
+              </a>
+            </div>
+          )}
+          {extractedImg && (
+            <div className="mb-4">
+              <p className="font-semibold text-gray-800">Extracted Watermark:</p>
+              <img src={extractedImg} alt="Extracted" className="max-w-full max-h-[400px] rounded shadow mt-2" />
+              <a
+                href={extractedImg}
+                download="watermark.jpg"
+                className="mt-2 inline-block bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition"
+              >
+                ⬇️ Download Watermark
+              </a>
+            </div>
+          )}
+          {txHash && (
+            <p className="text-sm text-gray-700">
+              Transaction: {" "}
+              <a
+                href={`https://sepolia.etherscan.io/tx/${txHash}`}
+                target="_blank"
+                className="text-indigo-600 hover:underline"
+              >
+                {txHash}
+              </a>
+            </p>
+          )}
+        </>
+      )}
 
-      {zoomImage && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
-          onClick={() => setZoomImage(null)}
-        >
-          <img
-            src={zoomImage}
-            alt="Zoomed"
-            className="max-w-[90%] max-h-[90%] rounded shadow-lg border-4 border-white"
-          />
+      {mode === "decode" && link && (
+        <div className="text-center mt-4">
+          <p className="font-semibold text-gray-700">Decoded Link:</p>
+          <a href={link} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">
+            {link}
+          </a>
         </div>
       )}
     </div>
