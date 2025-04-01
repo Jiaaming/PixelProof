@@ -10,6 +10,7 @@ interface UploadSectionProps {
   error: string;
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onUpload: () => void;
+  uploadLabel?: string;
 }
 
 export default function UploadSection({
@@ -19,6 +20,7 @@ export default function UploadSection({
   error,
   onFileChange,
   onUpload,
+  uploadLabel = "Upload an Image"
 }: UploadSectionProps) {
   const [showModal, setShowModal] = useState(false);
 
@@ -46,7 +48,7 @@ export default function UploadSection({
             : "bg-indigo-600 hover:bg-indigo-700"
         }`}
       >
-        Upload an Image
+        {uploadLabel}
       </button>
 
       {selectedFile && (
