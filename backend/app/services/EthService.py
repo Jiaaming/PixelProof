@@ -15,9 +15,9 @@ class EthService:
         # Initialize Web3 provider
         self.w3 = Web3(Web3.HTTPProvider(network_rpc or os.getenv("SEPOLIA_RPC"), request_kwargs={'timeout': 10}))
         if not self.w3.is_connected():
-            raise ConnectionError("Failed to connect to Sepolia testnet. Check your RPC URL.")
+            raise ConnectionError("Failed to connect to Sepolia devnet. Check your RPC URL.")
         else:
-            print("Connected to Sepolia testnet")
+            print("Connected to Sepolia devnet")
         self.private_key = private_key or os.getenv("PRIVATE_KEY")
         self.contract_address = contract_address or os.getenv("ETH_CONTRACT_ADDRESS")
         
@@ -33,7 +33,7 @@ class EthService:
         """Register an image hash on the blockchain"""
         # Compute 32-byte hash as bytes
         image_hash = hashlib.sha256(image_data).digest()
-
+        print(f"Image hash: {image_hash.hex()}")
         nonce = self.w3.eth.get_transaction_count(self.account.address)
         try:
             gas_estimate = self.contract.functions.registerImage(image_hash).estimate_gas()
@@ -53,4 +53,4 @@ class EthService:
         tx_hash = self.w3.eth.send_raw_transaction(signed_tx.raw_transaction)
         print(f"Image registered on the blockchain with transaction hash: {tx_hash.hex()}")
         print("nonce: ", nonce)
-        return tx_hash.hex()
+        return tx_hash.hex(), image_hash.hex()

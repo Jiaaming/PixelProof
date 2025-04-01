@@ -31,7 +31,6 @@ export default function SettingsSection({
 
       <div className="text-sm text-gray-600 break-words">
         <p><strong>Selected Chain:</strong> {selectedChain || "(none)"}</p>
-        <p><strong>Wallet Key:</strong> {walletKey || "(none)"}</p>
       </div>
 
       {showModal && (

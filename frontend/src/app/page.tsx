@@ -59,8 +59,8 @@ export default function HomePage() {
     if (!selectedFile) return;
 
     // Validate settings
-    if (!selectedChain || !walletKey) {
-      setError("Please select a chain and provide a wallet key in settings.");
+    if (!selectedChain) {
+      setError("Please select a chain in settings.");
       return;
     }
     setLoading(true); // Start loading
@@ -77,7 +77,8 @@ export default function HomePage() {
       });
 
       if (!response.ok) {
-        throw new Error("Upload failed. Please check server logs or try again.");
+        console.error("Upload failed:", response);
+        throw new Error("Upload failed. You have already registered this image.");
       }
 
       const data = await response.json();

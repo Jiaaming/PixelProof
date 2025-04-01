@@ -7,6 +7,7 @@ opencv-python
 pytest
 blind-watermark
 qrcode
-hardhat
+ape-hardhat
 solders
 solana
+pyzbar

@@ -48,7 +48,7 @@ export default function SettingsModal({
           type="text"
           value={walletKey}
           onChange={(e) => setWalletKey(e.target.value)}
-          placeholder="e.g., ETH_PRIVATE_KEY, SUI_KEY"
+          placeholder="leave it empty will use default private key in .env"
           className="w-full p-2 border rounded mb-4"
         />
 

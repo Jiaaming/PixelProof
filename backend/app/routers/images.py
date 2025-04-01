@@ -1,4 +1,5 @@
 from fastapi import APIRouter, File, UploadFile, HTTPException, Form
+from sympy import im
 from utils.image_utils import generate_qr_code
 import cv2
 import multiprocessing
@@ -11,6 +12,9 @@ import tempfile
 from services.EthService import EthService
 from services.SolService import SolService
 from pyzbar.pyzbar import decode
+
+# $ mkdir ~/lib
+# $ ln -s $(brew --prefix zbar)/lib/libzbar.dylib ~/lib/libzbar.dylib
 
 router = APIRouter()
 
@@ -26,13 +30,13 @@ from blind_watermark import WaterMark
 def register_on_chain(chain: str, key: str, image_data: bytes) -> str:
     if chain in ["ETH"]:
         blockchain_service = EthService()
-        tx_hash = blockchain_service.register_image(image_data)
+        tx_hash, image_hash = blockchain_service.register_image(image_data)
     elif chain in ["SOL"]:
         blockchain_service = SolService()
-        tx_hash = blockchain_service.register_image(image_data)
+        tx_hash, image_hash = blockchain_service.register_image(image_data)
     else:
         tx_hash = ""
-    return tx_hash
+    return tx_hash, image_hash
 
 
 @router.post("/upload")
@@ -52,12 +56,12 @@ async def upload_image(
         if file_size < min_size:
             raise HTTPException(status_code=400, detail="Image size too small (must be at least 1MB)")
 
-        tx_hash = register_on_chain(chain, key, image_data)
+        tx_hash, image_hash = register_on_chain(chain, key, image_data)
 
         if chain == "ETH":
             url = f"https://sepolia.etherscan.io/tx/0x{tx_hash}"
         elif chain == "SOL":
-            url = f"https://explorer.solana.com/tx/0x{tx_hash}?cluster=devnet"
+            url = f"https://explorer.solana.com/tx/{tx_hash}?cluster=devnet"
 
         qr_img = generate_qr_code(url)
         qr_np = np.array(qr_img.convert('L'))
@@ -91,10 +95,12 @@ async def upload_image(
         return {
             "embedded": {"data": embed_b64, "type": "image/jpeg"},
             "extracted": {"data": wm_b64, "type": "image/jpeg"},
-            "txHash": tx_hash
+            "txHash": tx_hash,
+            "imageHash": image_hash,
+            
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Error: Your image has already been registered")
 
 
 @router.post("/workspace/decode")

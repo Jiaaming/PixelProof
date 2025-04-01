@@ -10,6 +10,7 @@ export default function WorkspacePage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("");
   const [txHash, setTxHash] = useState<string>("");
+  const [imageHash, setImageHash] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [embeddedImg, setEmbeddedImg] = useState<string>("");
@@ -36,8 +37,8 @@ export default function WorkspacePage() {
   const handleUpload = async () => {
     if (!selectedFile) return;
 
-    if (!selectedChain || !walletKey) {
-      setError("Please select a chain and provide a wallet key in settings.");
+    if (!selectedChain) {
+      setError("Please select a chain in settings.");
       return;
     }
 
@@ -56,7 +57,7 @@ export default function WorkspacePage() {
       });
 
       if (!response.ok) {
-        throw new Error("Upload failed. Please check server logs or try again.");
+        throw new Error("Upload failed. You have already registered this image.");
       }
 
       const data = await response.json();
@@ -65,7 +66,7 @@ export default function WorkspacePage() {
       setEmbeddedImg(embeddedBase64);
       setExtractedImg(extractedBase64);
       if (data.txHash) setTxHash(data.txHash);
-
+      if (data.imageHash) setImageHash(data.imageHash);
       alert(`File uploaded successfully: ${selectedFile.name}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An unexpected error occurred.");
@@ -100,9 +101,11 @@ export default function WorkspacePage() {
         <DisplaySection
           mode="embed"
           preview={preview}
+          selectedChain={selectedChain}
           embeddedImg={embeddedImg}
           extractedImg={extractedImg}
           txHash={txHash}
+          imageHash={imageHash}
         />
       </div>
     </main>

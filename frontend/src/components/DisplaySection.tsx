@@ -2,12 +2,14 @@ type Props = {
   mode: "embed" | "decode";
   preview: string;
   embeddedImg?: string;
+  selectedChain?: string;
   extractedImg?: string;
   txHash?: string;
+  imageHash?: string;
   link?: string;
 };
 
-export default function DisplaySection({ mode, preview, embeddedImg, extractedImg, txHash, link }: Props) {
+export default function DisplaySection({ mode, preview, selectedChain, embeddedImg, extractedImg, txHash, imageHash, link }: Props) {
   return (
     <div>
       {preview && (
@@ -49,7 +51,11 @@ export default function DisplaySection({ mode, preview, embeddedImg, extractedIm
             <p className="text-sm text-gray-700">
               Transaction: {" "}
               <a
-                href={`https://sepolia.etherscan.io/tx/${txHash}`}
+                href={
+                  selectedChain === "ETH"
+                    ? `https://sepolia.etherscan.io/tx/0x${txHash}`
+                    : `https://explorer.solana.com/tx/${txHash}?cluster=devnet`
+                }
                 target="_blank"
                 className="text-indigo-600 hover:underline"
               >
@@ -57,9 +63,17 @@ export default function DisplaySection({ mode, preview, embeddedImg, extractedIm
               </a>
             </p>
           )}
+
+          {imageHash && (
+            <p className="text-sm text-gray-700">
+              Image Hash: {" "}
+              <a>
+                {imageHash}
+              </a>
+            </p>
+          )}
         </>
       )}
-
       {mode === "decode" && link && (
         <div className="text-center mt-4">
           <p className="font-semibold text-gray-700">Decoded Link:</p>

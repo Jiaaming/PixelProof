@@ -59,7 +59,7 @@ class SolService:
         """
         # Compute the 32-byte SHA256 hash of the image data
         image_hash = hashlib.sha256(image_data).digest()
-        
+        print(f"Image hash: {image_hash.hex()}")  
         # Compute the instruction discriminator (first 8 bytes of SHA256("global:register_image"))
         discriminator = hashlib.sha256(b"global:register_image").digest()[:8]
   
@@ -106,7 +106,7 @@ class SolService:
             response = self.client.send_raw_transaction(bytes(transaction))
             tx_signature = response.value
             print(f"Image registered on the blockchain with transaction signature: {tx_signature}")
-            return str(tx_signature)
+            return str(tx_signature), str(image_hash.hex())
         except Exception as e:
             print(f"Error registering image: {e}")
             raise
