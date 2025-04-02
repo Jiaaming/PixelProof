@@ -105,51 +105,63 @@ async def upload_image(
 
 @router.post("/workspace/decode")
 async def decode_image(file: UploadFile = File(...)):
+    # Validate that the uploaded file is an image
     if not file.content_type.startswith('image/'):
-        raise HTTPException(400, "only images are allowed")
+        raise HTTPException(status_code=400, detail="Only images are allowed")
 
     try:
+        # Read the uploaded image data
         image_data = await file.read()
-
-        # Step 1: try to decode directly from QR code
-        pil_img = Image.open(BytesIO(image_data)).convert("L")
-        decoded_objs = decode(pil_img)
-
-        if decoded_objs:
-            qr_content = decoded_objs[0].data.decode("utf-8")
-            return {"link": qr_content}
-
-        # Step 2: try to extract watermark from embedded image
+        
+        # Convert to RGB using PIL and then to BGR for OpenCV
         pil_img_rgb = Image.open(BytesIO(image_data)).convert("RGB")
         image_cv = cv2.cvtColor(np.array(pil_img_rgb), cv2.COLOR_RGB2BGR)
 
+        # Verify the image conversion
         if image_cv is None or not isinstance(image_cv, np.ndarray):
-            raise HTTPException(400, "Failed to convert image to OpenCV format")
+            raise HTTPException(status_code=400, detail="Failed to convert image to OpenCV format")
 
+        # Ensure the image has 3 channels (BGR)
         if len(image_cv.shape) != 3 or image_cv.shape[2] != 3:
             image_cv = cv2.cvtColor(image_cv, cv2.COLOR_GRAY2BGR)
 
+        # Extract the watermark using the same process as upload_image
         bwm1 = WaterMark()
-
         try:
             wm_extract = bwm1.extract(embed_img=image_cv, wm_shape=(128, 128), mode='bit')
             if wm_extract is None:
-                raise HTTPException(400, "Failed to extract watermark: got None")
+                raise HTTPException(status_code=400, detail="Failed to extract watermark: got None")
         except Exception as e:
-            raise HTTPException(400, f"Failed to extract watermark: {str(e)}")
+            raise HTTPException(status_code=400, detail=f"Failed to extract watermark: {str(e)}")
 
+        # Reshape the extracted watermark if it's 1D
         if wm_extract.ndim == 1:
             wm_extract = wm_extract.reshape((128, 128))
 
+        # Convert to a binary image (0s and 255s), matching upload_image
         wm_img = (wm_extract > 0.5).astype(np.uint8) * 255
-        qr_pil = Image.fromarray(wm_img)
-        decoded_fallback = decode(qr_pil)
 
-        if decoded_fallback:
-            qr_content = decoded_fallback[0].data.decode("utf-8")
-            return {"link": qr_content}
+        # Save the extracted image for debugging
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.jpg') as tmp_file:
+            success, wm_buf = cv2.imencode('.jpg', wm_img)
+            if success:
+                tmp_file.write(wm_buf.tobytes())
+                debug_path = tmp_file.name
+            else:
+                debug_path = "Failed to save extracted image"
 
-        raise HTTPException(404, "QR code not found in image or watermark")
+        # Encode the extracted image as base64 for the response
+        success, wm_buf = cv2.imencode('.jpg', wm_img)
+        if not success:
+            raise HTTPException(status_code=500, detail="Error encoding extracted image to JPEG")
+        wm_bytes = wm_buf.tobytes()
+        wm_b64 = base64.b64encode(wm_bytes).decode('utf-8')
+        print(f"Extracted image saved at: {debug_path}")
+        # Return the extracted image and debug path
+        return {
+            "extracted": {"data": wm_b64, "type": "image/jpeg"},
+        }
 
     except Exception as e:
-        raise HTTPException(500, f"Error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+

@@ -7,7 +7,7 @@ import DisplaySection from "@/components/DisplaySection";
 export default function DecodePage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("");
-  const [decodedLink, setDecodedLink] = useState<string>("");
+  const [extractedImageUrl, setExtractedImageUrl] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -16,7 +16,7 @@ export default function DecodePage() {
     if (!file) return;
     setSelectedFile(file);
     setPreview(URL.createObjectURL(file));
-    setDecodedLink("");
+    setExtractedImageUrl("");
     setError("");
   };
 
@@ -25,7 +25,7 @@ export default function DecodePage() {
 
     setLoading(true);
     setError("");
-    setDecodedLink("");
+    setExtractedImageUrl("");
 
     const formData = new FormData();
     formData.append("file", selectedFile);
@@ -42,7 +42,13 @@ export default function DecodePage() {
       }
 
       const data = await response.json();
-      setDecodedLink(data.link);
+      const { extracted } = data;
+      if (extracted && extracted.data && extracted.type) {
+        const imageUrl = `data:${extracted.type};base64,${extracted.data}`;
+        setExtractedImageUrl(imageUrl);
+      } else {
+        throw new Error("Invalid response format");
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "An unexpected error occurred.";
       setError(msg);
@@ -67,11 +73,11 @@ export default function DecodePage() {
       </div>
 
       <div className="w-1/2 bg-gray-50 p-6 overflow-auto">
-        <DisplaySection 
-          mode="decode" 
-          preview={preview} 
-          link={decodedLink}
-        />
+      <DisplaySection
+        mode="decode"
+        preview={preview} // Your uploaded image preview URL
+        extractedImg={extractedImageUrl}
+      />
       </div>
     </main>
   );

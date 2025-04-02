@@ -6,12 +6,13 @@ type Props = {
   extractedImg?: string;
   txHash?: string;
   imageHash?: string;
-  link?: string;
+  link?: string; // Optional, retained for potential use elsewhere
 };
 
 export default function DisplaySection({ mode, preview, selectedChain, embeddedImg, extractedImg, txHash, imageHash, link }: Props) {
   return (
     <div>
+      {/* Image Preview Section */}
       {preview && (
         <div className="mb-4">
           <p className="text-gray-700 font-medium">Image Preview:</p>
@@ -19,6 +20,7 @@ export default function DisplaySection({ mode, preview, selectedChain, embeddedI
         </div>
       )}
 
+      {/* Embed Mode Section */}
       {mode === "embed" && (
         <>
           {embeddedImg && (
@@ -49,7 +51,7 @@ export default function DisplaySection({ mode, preview, selectedChain, embeddedI
           )}
           {txHash && (
             <p className="text-sm text-gray-700">
-              Transaction: {" "}
+              Transaction:{" "}
               <a
                 href={
                   selectedChain === "ETH"
@@ -63,23 +65,23 @@ export default function DisplaySection({ mode, preview, selectedChain, embeddedI
               </a>
             </p>
           )}
-
           {imageHash && (
             <p className="text-sm text-gray-700">
-              Image Hash: {" "}
-              <a>
-                {imageHash}
-              </a>
+              Image Hash: {imageHash} {/* Fixed: Removed invalid <a> tag */}
             </p>
           )}
         </>
       )}
-      {mode === "decode" && link && (
-        <div className="text-center mt-4">
-          <p className="font-semibold text-gray-700">Decoded Link:</p>
-          <a href={link} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">
-            {link}
-          </a>
+
+      {/* Decode Mode Section */}
+      {mode === "decode" && extractedImg && (
+        <div className="mb-4">
+          <p className="font-semibold text-gray-800">Extracted QR Code:</p>
+          <img
+            src={extractedImg}
+            alt="Extracted QR Code"
+            className="max-w-full max-h-[400px] rounded shadow mt-2"
+          />
         </div>
       )}
     </div>
